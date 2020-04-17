@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  rabbitmq:
+    build: ./rabbitmq
+    container_name: rabbitmq
+    hostname: rabbitmq
+    env_file:
+      - ./rabbitmq/secret.env
+    ports:
+      - "15672:15672"
+
+  celery:
+    build:
+      context: ./celery
+      dockerfile: Dockerfile-worker
+    env_file:
+      - ./celery/secret.env
+    environment:
+      - LOGLEVEL=debug
+    volumes:
+      - ./celery/celery/src:/home/snek/src
+      - ./celery/celery/entrypoint.sh:/home/snek/entrypoint.sh
+    depends_on:
+      - rabbitmq
+
+  beat:
+    build:
+      context: ./celery
+      dockerfile: Dockerfile-beat
+    env_file:
+      - ./celery/secret.env
+    environment:
+      - LOGLEVEL=debug
+    volumes:
+      - ./celery/celery/src:/home/snek/src
+      - ./celery/celery/entrypoint.sh:/home/snek/entrypoint.sh
+    depends_on:
+      - rabbitmq
+
+  flower:
+    build:
+      context: ./celery
+      dockerfile: Dockerfile-flower
+    container_name: flower
+    env_file:
+      - ./celery/secret.env
+    ports:
+      - "5555:5555"
+    entrypoint: sleep 3500

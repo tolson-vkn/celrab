@@ -1,0 +1,16 @@
+FROM python:3.8-slim
+
+ADD requirements.txt /
+RUN pip install -r requirements.txt
+
+RUN groupadd snek && \
+    useradd --create-home --home-dir /home/snek -g snek snek
+
+ADD ./celery/src /home/snek/src
+
+WORKDIR /home/snek/src
+USER snek
+
+ADD ./celery/entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["worker"]

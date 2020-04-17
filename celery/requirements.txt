@@ -1,0 +1,7 @@
+amqp
+billiard
+celery
+kombu
+pytz
+redis
+vine
