@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery
+  namespace: celrab
+  labels:
+    app: celery
+    group: celrab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery
+  template:
+    metadata:
+      labels:
+        app: celery
+    spec:
+      containers:
+      - image: docker.io/timmyolson/celery
+        name: celery
+        command: ["celery", "-A", "celrab", "worker", "-l", "info"]
+        ports:
+        - containerPort: 8000
+        env:
+        - name: CELERY_BROKER_URL
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: celery_broker_url
+        - name: BROKER_API
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: broker_api
+        - name: BASIC_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: basic_auth
+status: {}

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   rabbitmq:
-    build: ./rabbitmq
+    image: rabbitmq:3-management
     container_name: rabbitmq
     hostname: rabbitmq
     env_file:
@@ -38,13 +38,14 @@ services:
     depends_on:
       - rabbitmq
 
-  flower:
-    build:
-      context: ./celery
-      dockerfile: Dockerfile-flower
-    container_name: flower
-    env_file:
-      - ./celery/secret.env
-    ports:
-      - "5555:5555"
-    entrypoint: sleep 3500
+# Not working
+#  flower:
+#    build:
+#      context: ./celery
+#      dockerfile: Dockerfile-flower
+#    container_name: flower
+#    env_file:
+#      - ./celery/secret.env
+#    ports:
+#      - "5555:5555"
+#    entrypoint: sleep 3500

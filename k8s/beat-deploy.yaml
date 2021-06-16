@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat
+  namespace: celrab
+  labels:
+    app: beat
+    group: celrab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beat
+  template:
+    metadata:
+      labels:
+        app: beat
+    spec:
+      containers:
+      - image: docker.io/timmyolson/beat
+        name: beat
+        command: ["celery", "-A", "celrab", "beat", "-l", "info"]
+        env:
+        - name: CELERY_BROKER_URL
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: celery_broker_url
+        - name: BROKER_API
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: broker_api
+        - name: BASIC_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: celery-secret
+              key: basic_auth
+
+status: {}
